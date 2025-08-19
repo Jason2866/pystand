@@ -65,14 +65,10 @@ jobs:
        run: |
          uv run pyinstaller --onefile --name pystand --console pystand.py
      - name: Test binary
-       shell: bash
        run: |
-         dist/pystand
-     - name: Move app
-       run: |
-         mv dist/pystand pystand
+         ./dist/pystand --help
      - name: 'Tar files'
-       run: tar -cvf Ubuntu.tar pystand
+       run: tar -cvf Ubuntu.tar -C dist pystand
      - uses: actions/upload-artifact@v4
        with:
          name: Ubuntu
@@ -99,14 +95,10 @@ jobs:
         run: |
           uv run pyinstaller --onefile --name pystand --console pystand.py
       - name: Test binary
-        shell: bash
         run: |
-          dist/pystand
-      - name: Move app
-        run: |
-          mv dist/pystand.app pystand-macOS.app
+          ./dist/pystand --help
       - name: 'Tar files'
-        run: tar -cvf macOS.tar pystand-macOS.app
+        run: tar -cvf macOS.tar -C dist pystand
       - name: 'Upload Artifact'
         uses: actions/upload-artifact@v4
         with:
@@ -134,14 +126,10 @@ jobs:
         run: |
           uv run pyinstaller --onefile --name pystand --console pystand.py
       - name: Test binary
-        shell: bash
         run: |
-          dist/pystand
-      - name: Move app
-        run: |
-          mv dist/pystand.app pystand-macOSarm.app
+          ./dist/pystand --help
       - name: 'Tar files'
-        run: tar -cvf macOSarm.tar pystand-macOSarm.app
+        run: tar -cvf macOSarm.tar -C dist pystand
       - name: 'Upload Artifact'
         uses: actions/upload-artifact@v4
         with:
