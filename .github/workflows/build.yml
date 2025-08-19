@@ -30,7 +30,7 @@ jobs:
           uv pip install PyInstaller
       - name: Run PyInstaller
         run: |
-          pyinstaller --onefile --name pystand --console pystand.py
+          uv run pyinstaller --onefile --name pystand --console pystand.py
       - name: Test binary
         shell: bash
         run: |
@@ -63,7 +63,7 @@ jobs:
          uv pip install PyInstaller
      - name: Run PyInstaller
        run: |
-         pyinstaller --onefile --name pystand --console pystand.py
+         uv run pyinstaller --onefile --name pystand --console pystand.py
      - name: Test binary
        shell: bash
        run: |
@@ -97,7 +97,7 @@ jobs:
           uv pip install PyInstaller
       - name: Run PyInstaller
         run: |
-          pyinstaller --onefile --name pystand --console pystand.py
+          uv run pyinstaller --onefile --name pystand --console pystand.py
       - name: Test binary
         shell: bash
         run: |
@@ -132,7 +132,7 @@ jobs:
           uv pip install PyInstaller
       - name: Run PyInstaller
         run: |
-          pyinstaller --onefile --name pystand --console pystand.py
+          uv run pyinstaller --onefile --name pystand --console pystand.py
       - name: Test binary
         shell: bash
         run: |
