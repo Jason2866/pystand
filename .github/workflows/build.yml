@@ -67,8 +67,10 @@ jobs:
      - name: Test binary
        run: |
          ./dist/pystand --help
-     - name: 'Tar files'
-       run: tar -cvf Ubuntu.tar -C dist pystand
+     - name: Set execute permissions and create tar
+       run: |
+         chmod +x dist/pystand
+         tar -cvpf Ubuntu.tar -C dist pystand
      - uses: actions/upload-artifact@v4
        with:
          name: Ubuntu
@@ -97,8 +99,10 @@ jobs:
       - name: Test binary
         run: |
           ./dist/pystand --help
-      - name: 'Tar files'
-        run: tar -cvf macOS.tar -C dist pystand
+      - name: Set execute permissions and create tar
+        run: |
+          chmod +x dist/pystand
+          tar -cvpf macOS.tar -C dist pystand
       - name: 'Upload Artifact'
         uses: actions/upload-artifact@v4
         with:
@@ -128,8 +132,10 @@ jobs:
       - name: Test binary
         run: |
           ./dist/pystand --help
-      - name: 'Tar files'
-        run: tar -cvf macOSarm.tar -C dist pystand
+      - name: Set execute permissions and create tar
+        run: |
+          chmod +x dist/pystand
+          tar -cvpf macOSarm.tar -C dist pystand
       - name: 'Upload Artifact'
         uses: actions/upload-artifact@v4
         with:
