@@ -311,9 +311,13 @@ options:
 
 ## Installation and Upgrade
 
-Python 3.8 or later is required. Arch Linux users can install [`pystand`
-from the AUR](https://aur.archlinux.org/packages/pystand) and skip this
-section.
+Python 3.8 or later is required.
+
+### Compiled Executable Binaries
+
+**Note: Compiled executable binaries for Linux, macOS and Windows are available in the [GitHub release section](https://github.com/bulletmark/pystand/releases). These standalone executables do not require Python to be installed on your system.**
+
+### Install via Package Managers
 
 Note [pystand is on PyPI](https://pypi.org/project/pystand/) so the
 easiest way to install it is to use [`uv tool`][uvtool] (or
