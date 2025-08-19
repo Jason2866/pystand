@@ -1,4 +1,4 @@
-name: Tasmota Esp Flasher
+name: pystand downloader for python-build-standalone
 
 on:
   workflow_dispatch:  # Manually start a workflow
@@ -24,16 +24,16 @@ jobs:
         uses: astral-sh/setup-uv@v6
         with:
           version: "latest"
-      - name: Install requirements
+      - name: Install dependencies
         run: |
-          uv pip install -r requirements.txt -r requirements_build.txt
-          uv install -e .
+          uv sync
+          uv pip install PyInstaller
       - name: Check if the installed versions can run
         run: |
-          pystand.py
+          uv run pystand
       - name: Run PyInstaller
         run: |
-          python -m PyInstaller.__main__ -F -w -n ESP-Flasher -i icon.ico esp_flasher\__main__.py
+          uv run python -m PyInstaller.__main__ -F -w -n pystand __main__.py
       - name: Test binary
         shell: bash
         run: |
@@ -52,20 +52,24 @@ jobs:
        uses: actions/setup-python@v5
        with:
          python-version: '3.13'
+     - name: Install uv
+       uses: astral-sh/setup-uv@v6
+       with:
+         version: "latest"
      - name: Install dependencies
        run: |
          sudo apt update
          sudo apt install libnotify-dev libsdl2-dev
      - name: Install requirements
        run: |
-         pip install -r requirements.txt -r requirements_build.txt
-         pip install -e .
+         uv sync
+         uv pip install PyInstaller
      - name: Check if the installed versions can run
        run: |
-         esp_flasher -h
+         uv run esp_flasher -h
      - name: Run PyInstaller
        run: |
-         python -m PyInstaller.__main__ -F -w -n ESP-Flasher -i icon.ico esp_flasher/__main__.py
+         uv run python -m PyInstaller.__main__ -F -w -n ESP-Flasher -i icon.ico esp_flasher/__main__.py
      - name: Test binary
        shell: bash
        run: |
@@ -89,16 +93,20 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.13'
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: "latest"
       - name: Install requirements
         run: |
-          pip install -r requirements.txt -r requirements_build.txt
-          pip install -e .
+          uv sync
+          uv pip install PyInstaller
       - name: Check if the installed versions can run
         run: |
-          esp_flasher -h
+          uv run esp_flasher -h
       - name: Run PyInstaller
         run: |
-          python -m PyInstaller.__main__ -F -w -n ESP-Flasher -i icon.icns esp_flasher/__main__.py
+          uv run python -m PyInstaller.__main__ -F -w -n ESP-Flasher -i icon.icns esp_flasher/__main__.py
       - name: Test binary
         shell: bash
         run: |
@@ -123,16 +131,20 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.13'
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: "latest"
       - name: Install requirements
         run: |
-          pip install -r requirements.txt -r requirements_build.txt
-          pip install -e .
+          uv sync
+          uv pip install PyInstaller
       - name: Check if the installed versions can run
         run: |
-          esp_flasher -h
+          uv run esp_flasher -h
       - name: Run PyInstaller
         run: |
-          python -m PyInstaller.__main__ -F -w -n ESP-Flasher -i icon.icns esp_flasher/__main__.py
+          uv run python -m PyInstaller.__main__ -F -w -n ESP-Flasher -i icon.icns esp_flasher/__main__.py
       - name: Test binary
         shell: bash
         run: |
