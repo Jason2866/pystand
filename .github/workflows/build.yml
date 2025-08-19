@@ -28,20 +28,17 @@ jobs:
         run: |
           uv sync
           uv pip install PyInstaller
-      - name: Check if the installed versions can run
-        run: |
-          uv run pystand
       - name: Run PyInstaller
         run: |
-          uv run python -m PyInstaller.__main__ -F -w -n pystand __main__.py
+          pyinstaller --onefile --name pystand --console pystand.py
       - name: Test binary
         shell: bash
         run: |
-          dist/ESP-Flasher.exe -h
+          dist/pystand.exe -h
       - uses: actions/upload-artifact@v4
         with:
           name: Windows
-          path: dist/ESP-Flasher.exe
+          path: dist/pystand.exe
 
   build-ubuntu:
     runs-on: ubuntu-latest
@@ -64,21 +61,18 @@ jobs:
        run: |
          uv sync
          uv pip install PyInstaller
-     - name: Check if the installed versions can run
-       run: |
-         uv run esp_flasher -h
      - name: Run PyInstaller
        run: |
-         uv run python -m PyInstaller.__main__ -F -w -n ESP-Flasher -i icon.ico esp_flasher/__main__.py
+         pyinstaller --onefile --name pystand --console pystand.py
      - name: Test binary
        shell: bash
        run: |
-         dist/ESP-Flasher -h 
+         dist/pystand
      - name: Move app
        run: |
-         mv dist/ESP-Flasher ESP-Flasher
+         mv dist/pystand pystand
      - name: 'Tar files'
-       run: tar -cvf Ubuntu.tar ESP-Flasher
+       run: tar -cvf Ubuntu.tar pystand
      - uses: actions/upload-artifact@v4
        with:
          name: Ubuntu
@@ -101,21 +95,18 @@ jobs:
         run: |
           uv sync
           uv pip install PyInstaller
-      - name: Check if the installed versions can run
-        run: |
-          uv run esp_flasher -h
       - name: Run PyInstaller
         run: |
-          uv run python -m PyInstaller.__main__ -F -w -n ESP-Flasher -i icon.icns esp_flasher/__main__.py
+          pyinstaller --onefile --name pystand --console pystand.py
       - name: Test binary
         shell: bash
         run: |
-          dist/ESP-Flasher -h
+          dist/pystand
       - name: Move app
         run: |
-          mv dist/ESP-Flasher.app ESP-Flasher-macOS.app
+          mv dist/pystand.app pystand-macOS.app
       - name: 'Tar files'
-        run: tar -cvf macOS.tar ESP-Flasher-macOS.app
+        run: tar -cvf macOS.tar pystand-macOS.app
       - name: 'Upload Artifact'
         uses: actions/upload-artifact@v4
         with:
@@ -139,21 +130,18 @@ jobs:
         run: |
           uv sync
           uv pip install PyInstaller
-      - name: Check if the installed versions can run
-        run: |
-          uv run esp_flasher -h
       - name: Run PyInstaller
         run: |
-          uv run python -m PyInstaller.__main__ -F -w -n ESP-Flasher -i icon.icns esp_flasher/__main__.py
+          pyinstaller --onefile --name pystand --console pystand.py
       - name: Test binary
         shell: bash
         run: |
-          dist/ESP-Flasher -h 
+          dist/pystand
       - name: Move app
         run: |
-          mv dist/ESP-Flasher.app ESP-Flasher-macOSarm.app
+          mv dist/pystand.app pystand-macOSarm.app
       - name: 'Tar files'
-        run: tar -cvf macOSarm.tar ESP-Flasher-macOSarm.app
+        run: tar -cvf macOSarm.tar pystand-macOSarm.app
       - name: 'Upload Artifact'
         uses: actions/upload-artifact@v4
         with:
