@@ -315,7 +315,7 @@ Python 3.8 or later is required.
 
 ### Compiled Executable Binaries
 
-**Note: Compiled executable binaries for Linux, macOS and Windows are available in the [GitHub release section](https://github.com/bulletmark/pystand/releases). These standalone executables do not require Python to be installed on your system.**
+**Note: Compiled executable binaries for Linux, macOS and Windows are available in the [GitHub release section](https://github.com/Jason2866/pystand/releases). These standalone executables do not require Python to be installed on your system.**
 
 ### Install via Package Managers
 
