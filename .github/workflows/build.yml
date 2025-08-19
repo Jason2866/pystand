@@ -1,0 +1,176 @@
+name: Tasmota Esp Flasher
+
+on:
+  workflow_dispatch:  # Manually start a workflow
+  push:
+    tags:
+      - "v*.*.*"
+    paths-ignore:
+      - '.github/**' # Ignore changes towards the .github directory
+      - '*.md'
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          architecture: 'x64'
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: "latest"
+      - name: Install requirements
+        run: |
+          uv pip install -r requirements.txt -r requirements_build.txt
+          uv install -e .
+      - name: Check if the installed versions can run
+        run: |
+          pystand.py
+      - name: Run PyInstaller
+        run: |
+          python -m PyInstaller.__main__ -F -w -n ESP-Flasher -i icon.ico esp_flasher\__main__.py
+      - name: Test binary
+        shell: bash
+        run: |
+          dist/ESP-Flasher.exe -h
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Windows
+          path: dist/ESP-Flasher.exe
+
+  build-ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+     - name: Checkout
+       uses: actions/checkout@v4
+     - name: Install Python
+       uses: actions/setup-python@v5
+       with:
+         python-version: '3.13'
+     - name: Install dependencies
+       run: |
+         sudo apt update
+         sudo apt install libnotify-dev libsdl2-dev
+     - name: Install requirements
+       run: |
+         pip install -r requirements.txt -r requirements_build.txt
+         pip install -e .
+     - name: Check if the installed versions can run
+       run: |
+         esp_flasher -h
+     - name: Run PyInstaller
+       run: |
+         python -m PyInstaller.__main__ -F -w -n ESP-Flasher -i icon.ico esp_flasher/__main__.py
+     - name: Test binary
+       shell: bash
+       run: |
+         dist/ESP-Flasher -h 
+     - name: Move app
+       run: |
+         mv dist/ESP-Flasher ESP-Flasher
+     - name: 'Tar files'
+       run: tar -cvf Ubuntu.tar ESP-Flasher
+     - uses: actions/upload-artifact@v4
+       with:
+         name: Ubuntu
+         path: Ubuntu.tar
+
+  build-macos:
+    runs-on: macos-13
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install requirements
+        run: |
+          pip install -r requirements.txt -r requirements_build.txt
+          pip install -e .
+      - name: Check if the installed versions can run
+        run: |
+          esp_flasher -h
+      - name: Run PyInstaller
+        run: |
+          python -m PyInstaller.__main__ -F -w -n ESP-Flasher -i icon.icns esp_flasher/__main__.py
+      - name: Test binary
+        shell: bash
+        run: |
+          dist/ESP-Flasher -h
+      - name: Move app
+        run: |
+          mv dist/ESP-Flasher.app ESP-Flasher-macOS.app
+      - name: 'Tar files'
+        run: tar -cvf macOS.tar ESP-Flasher-macOS.app
+      - name: 'Upload Artifact'
+        uses: actions/upload-artifact@v4
+        with:
+          name: macOS
+          path: macOS.tar
+
+  build-macos-arm:
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install requirements
+        run: |
+          pip install -r requirements.txt -r requirements_build.txt
+          pip install -e .
+      - name: Check if the installed versions can run
+        run: |
+          esp_flasher -h
+      - name: Run PyInstaller
+        run: |
+          python -m PyInstaller.__main__ -F -w -n ESP-Flasher -i icon.icns esp_flasher/__main__.py
+      - name: Test binary
+        shell: bash
+        run: |
+          dist/ESP-Flasher -h 
+      - name: Move app
+        run: |
+          mv dist/ESP-Flasher.app ESP-Flasher-macOSarm.app
+      - name: 'Tar files'
+        run: tar -cvf macOSarm.tar ESP-Flasher-macOSarm.app
+      - name: 'Upload Artifact'
+        uses: actions/upload-artifact@v4
+        with:
+          name: macOSarm
+          path: macOSarm.tar
+
+  release:
+      name: Upload binaries to release section
+      needs: [build-windows, build-ubuntu, build-macos, build-macos-arm]
+      if: startsWith(github.ref, 'refs/tags/')
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout repository
+          uses: actions/checkout@v4
+          with:
+            ref: factory
+        - name: Download built binaries artifacts
+          uses: actions/download-artifact@v4
+          with:
+            path: binary
+            merge-multiple: true
+        - name: Display downloaded artifact files
+          run: |
+            ls -R ./
+        - name: Release
+          uses: jason2866/action-gh-release@v1.3
+          with:
+            prerelease: false
+            files: |
+              binary/*
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
