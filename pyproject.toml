@@ -15,6 +15,7 @@ classifiers = [
 dynamic = ["version"]
 dependencies = [
   "argcomplete",
+  "certifi",
   "packaging",
   "platformdirs",
   "pygithub",

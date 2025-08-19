@@ -13,6 +13,7 @@ import platform
 import re
 import shlex
 import shutil
+import ssl
 import sys
 import time
 from argparse import ArgumentParser, Namespace
@@ -22,6 +23,7 @@ from pathlib import Path
 from typing import Any, Iterable, Iterator
 
 import argcomplete
+import certifi
 import platformdirs
 from packaging.version import parse as parse_version
 
@@ -59,6 +61,22 @@ def is_admin() -> bool:
         return ctypes.windll.shell32.IsUserAnAdmin() != 0  # type: ignore
 
     return os.geteuid() == 0
+
+
+def create_ssl_context():
+    "Create SSL context that works with PyInstaller binaries"
+    try:
+        # Try to use certifi bundle first (most reliable)
+        context = ssl.create_default_context(cafile=certifi.where())
+    except ImportError:
+        try:
+            # Fallback to default context
+            context = ssl.create_default_context()
+        except Exception:
+            # Last resort: disable verification (not recommended for production)
+            context = ssl._create_unverified_context()
+    
+    return context
 
 
 def get_version() -> str:
@@ -163,7 +181,8 @@ def register_zst() -> None:
 def fetch(args: Namespace, release: str, url: str, tdir: Path) -> str | None:
     "Fetch and unpack a release file"
     from urllib.parse import unquote, urlparse
-    from urllib.request import urlretrieve
+    from urllib.request import urlretrieve, urlopen
+    from urllib.error import URLError
 
     error = None
     tmpdir = tdir.with_name(f'{tdir.name}-tmp')
@@ -177,7 +196,15 @@ def fetch(args: Namespace, release: str, url: str, tdir: Path) -> str | None:
 
     if not cache_file.exists():
         try:
-            urlretrieve(url, cache_file)
+            # Create SSL context for secure downloads
+            ssl_context = create_ssl_context()
+            
+            # Use urlopen with SSL context instead of urlretrieve
+            with urlopen(url, context=ssl_context) as response:
+                with open(cache_file, 'wb') as f:
+                    f.write(response.read())
+        except (URLError, OSError) as e:
+            return f'Failed to fetch "{url}": {e}'
         except Exception as e:
             error = f'Failed to fetch "{url}": {e}'
 
@@ -321,7 +348,8 @@ def fetch_tags() -> Iterator[tuple[str, str]]:
     from urllib.request import urlopen
 
     try:
-        with urlopen(LATEST_RELEASES) as url:
+        ssl_context = create_ssl_context()
+        with urlopen(LATEST_RELEASES, context=ssl_context) as url:
             data = et.parse(url).getroot()
     except Exception:
         sys.exit('Failed to fetch latest YYYYMMDD release atom file.')
@@ -339,7 +367,8 @@ def fetch_tag_latest() -> str:
     from urllib.request import urlopen
 
     try:
-        with urlopen(LATEST_RELEASE_TAG) as url:
+        ssl_context = create_ssl_context()
+        with urlopen(LATEST_RELEASE_TAG, context=ssl_context) as url:
             data = url.geturl()
     except Exception:
         sys.exit('Failed to fetch latest YYYYMMDD release tag.')
